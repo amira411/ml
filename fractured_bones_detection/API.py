@@ -50,7 +50,7 @@ model = tf.keras.models.load_model("fractured_bones_detection/fracture_classific
 
 fracture_router = APIRouter()
 
-@fracture_router.post("/predict_fracture", response_class=JSONResponse) 
+@fracture_router.post("/detect_fracture", response_class=JSONResponse) 
 
 async def predict(file: UploadFile = File(...)):
     # Check if model is loaded
