@@ -56,9 +56,7 @@ def preprocess_image(image_bytes):
 @brain_tumor_detector_router.post("/detect_tumor", response_class=JSONResponse)
 
 async def predict(file: UploadFile = File(...)):
-    """
-    Make a prediction for brain tumor presence in the uploaded MRI image.
-    """
+   
     try:
         # Read the file
         contents = await file.read()
@@ -69,11 +67,27 @@ async def predict(file: UploadFile = File(...)):
         # Make prediction
         prediction = model.predict(image)
         probability = float(prediction[0][0])
+     
         
-        prediction_class = "TUMOR" if np.argmax([1 - probability, probability]) == 1 else "NO TUMOR DETECTED"
+        # Determine class and percentage
+        prediction_class = "TUMOR" if probability >= 0.5 else "NO TUMOR DETECTED"
+        probability_percent = round(probability * 100, 2)
         
-        return prediction_class
-        
+        # Interpretation sentence
+        if probability >= 0.85:
+            comment = "There is a high chance of a tumor. Please seek further medical evaluation."
+        elif probability >= 0.5:
+            comment = "There is a moderate chance of a tumor. recommend consulting a doctor."
+        elif probability >= 0.15:
+            comment = "There is a low possibility of a tumor. Medical confirmation is still recommended."
+        else:
+            comment = "Very low possibility of a tumor. No immediate concerns detected."
+
+        return {
+            "prediction": prediction_class,
+            "tumor_probability_percent": probability_percent ,
+            "Analysis": comment
+        }
     except Exception as e:
         return JSONResponse({
             "success": False,

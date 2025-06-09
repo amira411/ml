@@ -72,15 +72,30 @@ async def predict(file: UploadFile = File(...)):
         # Make prediction
         predictions = model.predict(processed_image)
         
-        # For binary classification with sigmoid output
+        
         probability = float(predictions[0][0])
         predicted_class = int(probability > 0.5)
-        
-    
+        probability_percent = round(probability * 100, 2)
+
+        # Interpretation
+        probability = 1-probability
+        if probability >= 0.85:
+            comment = "High chance of fracture. Please consult a doctor immediately."
+        elif probability >= 0.5:
+            comment = "Possible fracture detected. It's best to get medical advice."
+        elif probability >= 0.15:
+            comment = "Low chance of fracture. But a check-up is still a good idea."
+        else:
+            comment = "Very low chance of fracture. No immediate concern detected."
+
         result = {
             "prediction": class_names[predicted_class],
+            "fracture_probability_percent": 100 - probability_percent,
+            "Analysis": comment
         }
-        
+
+    
+      
         return result
     
     except Exception as e:

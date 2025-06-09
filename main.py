@@ -22,7 +22,7 @@ from tumor_detector.API import brain_tumor_detector_router
 
 app=FastAPI()
 
-# Add root endpoint
+
 @app.get("/")
 async def root():
     return {"Upload A Clear MRI OR X-RAY Image To Diagnose "}
