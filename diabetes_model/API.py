@@ -56,7 +56,7 @@ def predict(data: PatientData):
         prob = model.predict_proba(X_scaled)[0][1]
         pred_label = "Diabetes" if prob >= 0.5 else "No Diabetes"
 
-        # Risk level
+
         if prob == 0:
             risk = "No risk detected you’re currently in the safe zone."
         elif 0 < prob < 0.3:
